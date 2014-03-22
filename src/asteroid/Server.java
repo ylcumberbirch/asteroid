@@ -63,6 +63,7 @@ public class Server extends Thread{
 			System.out.println("IO Error");
 		}
 		catch(Exception e){
+			e.printStackTrace();
 			System.exit(-1);
 		}
 		

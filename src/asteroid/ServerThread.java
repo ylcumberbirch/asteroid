@@ -1,10 +1,13 @@
 package asteroid;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.channels.SocketChannel;
 import java.util.Hashtable;
 
 public class ServerThread implements Runnable{
@@ -50,6 +53,8 @@ public class ServerThread implements Runnable{
 	public void run() {
 		try
 		{
+			//ByteArrayOutputStream baos = new ByteArrayOutputStream(size);
+	
 			ObjectInputStream ois = new ObjectInputStream(this.getConection().getInputStream());
 			while(this.getServerWorld().isActive())
 			{	
@@ -61,7 +66,11 @@ public class ServerThread implements Runnable{
 			}
 			ois.close();
 			this.getConection().close();
-			System.exit(-1);
+			//If exited because we closed server world, exit
+			//If not, it was just a client leaving. Do nothing else
+			if (!this.getServerWorld().isActive()){
+				System.exit(-1);
+			}
 		}
 		catch(SocketException se)
 		{

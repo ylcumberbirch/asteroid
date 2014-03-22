@@ -37,7 +37,7 @@ public class Game implements Serializable{
 		this.objects = new ArrayList <GameObject>();
 		Vector color = new Vector(new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat());
 		for (int i = 0; i < numObjects;i++){
-			Asteroid asteroid = new Asteroid(Constants.DEFAULT_SIZE, clientID);
+			Asteroid asteroid = new Asteroid(clientID);
 			asteroid.setColor(color);
 			this.objects.add(asteroid);
 		}

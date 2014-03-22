@@ -9,9 +9,9 @@ import org.lwjgl.input.Keyboard;
 //import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GL11;
 
 import tools.Constants;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -39,7 +39,8 @@ public class Renderer extends Thread {
 	}
 	
 	public synchronized void draw(){
-		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glLoadIdentity();
 		this.getWorld().draw();
 		if (this.getServerWorld() != null){
 			this.getServerWorld().draw();
@@ -61,26 +62,21 @@ public class Renderer extends Thread {
 	
 	public void resizeOGL() {
 		glClearColor(0f, 0f, 0f, 0.5f);
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-	    GL11.glClearDepth(1.0);
-		glClearDepth(1.0f);
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
+
+		glClearDepth(1.0f); // clear depth buffer
+        glEnable(GL_DEPTH_TEST); // Enables depth testing
+        glDepthFunc(GL_LEQUAL); // sets the type of test to use for depth
+        glMatrixMode(GL_PROJECTION); // sets the matrix mode to project
+		//glLoadIdentity();
 		glViewport(0, 0, Constants.DISPLAY_WIDTH, Constants.DISPLAY_HEIGHT);
-		gluPerspective(45.0f, (float) Constants.DISPLAY_WIDTH / (float) Constants.DISPLAY_HEIGHT, 0.001f, 10000.0f);
+		gluPerspective(60.0f, (float) Constants.DISPLAY_WIDTH / (float) Constants.DISPLAY_HEIGHT, 0.01f, 1000.0f);
 		
 		gluLookAt(  this.world.getCameraPosition().getX(), this.world.getCameraPosition().getY(), this.world.getCameraPosition().getZ(),   	// Camera Position
 					this.world.getCameraFoa().getX(), this.world.getCameraFoa().getY(), this.world.getCameraFoa().getZ(),   				// FOA
 					0, 1, 0 );
-		
 		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		GL11.glColor3f(0f, 0f, 0f);
-		GL11.glBegin(GL11.GL_LINES);
-		    GL11.glLineWidth(5.0f);
-		    GL11.glVertex3f(0,0,0);
-		    GL11.glVertex3f(0,0,100);
-		 GL11.glEnd();
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		glLoadIdentity();	
 	}
 	
 	public void initLightOGL() {
