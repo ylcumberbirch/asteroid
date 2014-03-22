@@ -12,6 +12,7 @@ import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Sphere;
 
 import tools.Vector;
+import tools.Constants;
 
 /**
  * @author yazbod
@@ -20,23 +21,11 @@ import tools.Vector;
 public class Asteroid extends GameObject{
 
 	private static final long serialVersionUID = 2345505974888697407L;
-	private static final int NUM_FACETS = 20;
-	private float size;
 	private Vector color;
 	
-	public Asteroid(float size, int clientID){
+	public Asteroid( int clientID){
 		super(clientID);
-		this.size = size;
 		this.color = new Vector(new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat());
-	}
-	
-	
-	public void setSize(int size){
-		this.size = size;
-	}
-	
-	public float getSize(){
-		return this.size;
 	}
 	
 	public Vector getColor(){
@@ -60,19 +49,19 @@ public class Asteroid extends GameObject{
 	}
 	
 	public void drawModel(){
-		renderAsteroid(NUM_FACETS);
+		renderAsteroid(Constants.NUM_FACETS);
 	}
 	
 	public void renderAsteroid(int facets){
-		GL11.glColor3f(this.getR(), this.getG(), this.getB());
+		
 		Sphere s = new Sphere();            // an LWJGL class
         s.setOrientation(GLU.GLU_OUTSIDE);  // normals point outwards
         s.setTextureFlag(false);             // generate texture coords
         GL11.glPushMatrix();
         {
 	        //GL11.glRotatef(-90f, 1,0,0);    // rotate the sphere to align the axis vertically
-        	
-	        s.draw(this.getSize(), facets, facets); // run GL commands to draw sphere
+        	GL11.glColor3f(this.getR(), this.getG(), this.getB());
+	        s.draw(Constants.DEFAULT_SIZE, facets, facets); // run GL commands to draw sphere
         }
         GL11.glPopMatrix();
 	}
