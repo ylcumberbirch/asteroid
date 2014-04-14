@@ -18,12 +18,12 @@ public abstract class GameObject implements Drawable, Serializable{
 	public GameObject(int clientID){
 		float posX = (float)((2*Math.random()*Constants.LIM_X)-Constants.LIM_X);
 		float posY = (float)((2*Math.random()*Constants.LIM_Y)-Constants.LIM_Y);
-		//float posZ = (float)((2*Math.random()*Constants.LIM_Z)-Constants.LIM_Z);
-		float posZ = 0f;
+		float posZ = (float)((2*Math.random()*Constants.LIM_Z)-Constants.LIM_Z);
+		//float posZ = 50f;
 		float speedX = (float)(((2*Math.random())-1)*Constants.MAX_SPEED);
 		float speedY = (float)(((2*Math.random())-1)*Constants.MAX_SPEED);
-		//float speedZ = (float)(((2*Math.random())-1)*Constants.MAX_SPEED);
-		float speedZ = 0;
+		float speedZ = (float)(((2*Math.random())-1)*Constants.MAX_SPEED);
+		//float speedZ = 0;
 		this.position = new Vector(posX, posY, posZ);
 		this.speed = new Vector(speedX, speedY, speedZ);
 		this.id = (int)(Math.floor(1000000*Math.random()));

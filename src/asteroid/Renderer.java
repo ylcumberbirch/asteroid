@@ -46,6 +46,7 @@ public class Renderer extends Thread {
 	public synchronized void draw(){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glLoadIdentity();
+        drawLines();
 		this.getWorld().draw();
 		if (this.getServerWorld() != null){
 			this.getServerWorld().draw();
@@ -74,7 +75,7 @@ public class Renderer extends Thread {
 	}
 	
 	public void initOGL(){
-		glClearColor(0f, 0f, 0f, 0f);
+		glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 		glClearDepth(1.0f);
 		glEnable(GL_DEPTH_TEST);
 		//glEnable(GL_LIGHTING);
@@ -86,32 +87,12 @@ public class Renderer extends Thread {
         glMatrixMode(GL_PROJECTION); // sets the matrix mode to project
 		//glLoadIdentity();
 		glViewport(0, 0, Constants.DISPLAY_WIDTH, Constants.DISPLAY_HEIGHT);
-		gluPerspective(60.0f, (float) Constants.DISPLAY_WIDTH / (float) Constants.DISPLAY_HEIGHT, 0.01f, 1000.0f);
+		gluPerspective(45.0f, (float) Constants.DISPLAY_WIDTH / (float) Constants.DISPLAY_HEIGHT, 0.01f, 1000.0f);
 		
 		gluLookAt(  this.world.getCameraPosition().getX(), this.world.getCameraPosition().getY(), this.world.getCameraPosition().getZ(),   	// Camera Position
 					this.world.getCameraFoa().getX(), this.world.getCameraFoa().getY(), this.world.getCameraFoa().getZ(),   				// FOA
 					0, 1, 0 );
 		initLightOGL();
-		
-	}
-	
-	public void resizeOGL() {
-		glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
-
-		glClearDepth(1.0f); // clear depth buffer
-        glEnable(GL_DEPTH_TEST); // Enables depth testing
-        glDepthFunc(GL_LEQUAL); // sets the type of test to use for depth
-        glMatrixMode(GL_PROJECTION); // sets the matrix mode to project
-		//glLoadIdentity();
-		glViewport(0, 0, Constants.DISPLAY_WIDTH, Constants.DISPLAY_HEIGHT);
-		gluPerspective(60.0f, (float) Constants.DISPLAY_WIDTH / (float) Constants.DISPLAY_HEIGHT, 0.01f, 1000.0f);
-		
-		gluLookAt(  this.world.getCameraPosition().getX(), this.world.getCameraPosition().getY(), this.world.getCameraPosition().getZ(),   	// Camera Position
-					this.world.getCameraFoa().getX(), this.world.getCameraFoa().getY(), this.world.getCameraFoa().getZ(),   				// FOA
-					0, 1, 0 );
-		glMatrixMode(GL_MODELVIEW);
-        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-		glLoadIdentity();	
 		
 	}
 	
@@ -167,8 +148,7 @@ public class Renderer extends Thread {
 			lwjgle.printStackTrace();
 		}
 		initOGL();
-		//resizeOGL();
-		//initLightOGL();	
+		
 		if (this.getServerWorld() != null){
 			while (serverWorld.isActive()){
 				render();
@@ -180,5 +160,35 @@ public class Renderer extends Thread {
 			}
 		}
 		stopRendering();
+	}
+	public void drawLines(){
+		glLineWidth(2);
+		glBegin(GL_LINES);
+			glColor3f(0, 0, 0);
+			//Top Line
+        	glVertex3d(Constants.LIM_X, Constants.LIM_Y,0f);
+            glVertex3d(-Constants.LIM_X, Constants.LIM_Y, 0f);
+            //Bottom Line
+            glVertex3d(Constants.LIM_X, -Constants.LIM_Y,0f);
+            glVertex3d(-Constants.LIM_X, -Constants.LIM_Y, 0f);
+            //Right Line
+            glVertex3d(Constants.LIM_X, -Constants.LIM_Y,0f);
+            glVertex3d(Constants.LIM_X, Constants.LIM_Y, 0f);
+            //Left Line
+            glVertex3d(-Constants.LIM_X,-Constants.LIM_Y,0f);
+            glVertex3d(-Constants.LIM_X, Constants.LIM_Y, 0f);
+            //Diag Top Right
+        	glVertex3d(Constants.LIM_X, Constants.LIM_Y,0f);
+            glVertex3d(Constants.LIM_X, Constants.LIM_Y, 100f);
+            //Diag Top Left
+            glVertex3d(-Constants.LIM_X, Constants.LIM_Y,0f);
+            glVertex3d(-Constants.LIM_X, Constants.LIM_Y, 100f);
+            //Diag Bottom Right
+            glVertex3d(Constants.LIM_X, -Constants.LIM_Y,0f);
+            glVertex3d(Constants.LIM_X, -Constants.LIM_Y, 100f);
+            //Diag Bottom Left
+            glVertex3d(-Constants.LIM_X, -Constants.LIM_Y,0f);
+            glVertex3d(-Constants.LIM_X, -Constants.LIM_Y, 100f);
+        glEnd();
 	}
 }

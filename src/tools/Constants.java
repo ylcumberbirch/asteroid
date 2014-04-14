@@ -11,8 +11,8 @@ public class Constants implements Serializable{
 	public static final boolean FULLSCREEN = false;
 	public static final int SERVER_PORT = 1234;
 	public static final String SERVER_ADDRESS = "127.0.0.1";
-	public static final float LIM_X = 60f;
-	public static final float LIM_Y = 40f;
+	public static final float LIM_X = 27f;
+	public static final float LIM_Y = 20f;
 	public static final float LIM_Z = 50f;
 	public static final int CLIENT_ASTEROIDS = 10;
 	public static final float DEFAULT_SIZE = 2f; 
