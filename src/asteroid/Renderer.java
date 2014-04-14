@@ -4,6 +4,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.util.glu.GLU.gluPerspective;
 import static org.lwjgl.util.glu.GLU.gluLookAt;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 //import org.lwjgl.input.Mouse;
@@ -19,6 +20,10 @@ import java.nio.FloatBuffer;
 public class Renderer extends Thread {
 	private Game world;			//Single Client World
 	private Game serverWorld;	//Server World. Can be null
+	private FloatBuffer matSpecular;
+	private FloatBuffer lightPosition;
+	private FloatBuffer whiteLight; 
+	private FloatBuffer lModelAmbient;
 	
 	public Renderer(Game world){
 		this.world = world;
@@ -51,17 +56,47 @@ public class Renderer extends Thread {
 		//Methods already check if created before destroying.
 		Display.destroy();
 		Keyboard.destroy();
+		System.exit(0);
+	}
+	
+	private void initLightArrays() {
+		matSpecular = BufferUtils.createFloatBuffer(4);
+		matSpecular.put(1.0f).put(1.0f).put(1.0f).put(1.0f).flip();
+		
+		lightPosition = BufferUtils.createFloatBuffer(4);
+		lightPosition.put(1.0f).put(1.0f).put(1.0f).put(0.0f).flip();
+		
+		whiteLight = BufferUtils.createFloatBuffer(4);
+		whiteLight.put(1.0f).put(1.0f).put(1.0f).put(1.0f).flip();
+		
+		lModelAmbient = BufferUtils.createFloatBuffer(4);
+		lModelAmbient.put(0.5f).put(0.5f).put(0.5f).put(1.0f).flip();
 	}
 	
 	public void initOGL(){
 		glClearColor(0f, 0f, 0f, 0f);
+		glClearDepth(1.0f);
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_LIGHTING);
+		//glEnable(GL_LIGHTING);
 		glShadeModel(GL_SMOOTH);
+
+		glClearDepth(1.0f); // clear depth buffer
+        glEnable(GL_DEPTH_TEST); // Enables depth testing
+        glDepthFunc(GL_LEQUAL); // sets the type of test to use for depth
+        glMatrixMode(GL_PROJECTION); // sets the matrix mode to project
+		//glLoadIdentity();
+		glViewport(0, 0, Constants.DISPLAY_WIDTH, Constants.DISPLAY_HEIGHT);
+		gluPerspective(60.0f, (float) Constants.DISPLAY_WIDTH / (float) Constants.DISPLAY_HEIGHT, 0.01f, 1000.0f);
+		
+		gluLookAt(  this.world.getCameraPosition().getX(), this.world.getCameraPosition().getY(), this.world.getCameraPosition().getZ(),   	// Camera Position
+					this.world.getCameraFoa().getX(), this.world.getCameraFoa().getY(), this.world.getCameraFoa().getZ(),   				// FOA
+					0, 1, 0 );
+		initLightOGL();
+		
 	}
 	
 	public void resizeOGL() {
-		glClearColor(0f, 0f, 0f, 0.5f);
+		glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 
 		glClearDepth(1.0f); // clear depth buffer
         glEnable(GL_DEPTH_TEST); // Enables depth testing
@@ -77,20 +112,28 @@ public class Renderer extends Thread {
 		glMatrixMode(GL_MODELVIEW);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glLoadIdentity();	
+		
 	}
 	
 	public void initLightOGL() {
-		// Place a light source
-		ByteBuffer buffer = ByteBuffer.allocateDirect(16).order(ByteOrder.nativeOrder());
-		float lpos[] = { 2.0f, 0.0f, 1000.0f, 1.0f };
-		float amb[] =  { 0.6f, 0.6f, 0.6f, 1.0f };
-		float dif[] =  { 0.8f, 0.8f, 0.8f, 1.0f };
-		float spe[] =  { 0.8f, 0.8f, 0.8f, 1.0f };
-		glEnable(GL_LIGHT0);
-		glLight(GL_LIGHT0, GL_POSITION, (FloatBuffer) buffer.asFloatBuffer().put(lpos).flip());
-		glLight(GL_LIGHT0, GL_AMBIENT, (FloatBuffer) buffer.asFloatBuffer().put(amb).flip());
-		glLight(GL_LIGHT0, GL_DIFFUSE, (FloatBuffer) buffer.asFloatBuffer().put(dif).flip());
-		glLight(GL_LIGHT0, GL_SPECULAR, (FloatBuffer) buffer.asFloatBuffer().put(spe).flip());
+		glMatrixMode(GL_MODELVIEW);
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		glLoadIdentity();
+		initLightArrays();
+		glShadeModel(GL_SMOOTH);
+		glMaterial(GL_FRONT, GL_SPECULAR, matSpecular);				// sets specular material color
+		glMaterialf(GL_FRONT, GL_SHININESS, 50.0f);					// sets shininess
+		
+		glLight(GL_LIGHT0, GL_POSITION, lightPosition);				// sets light position
+		glLight(GL_LIGHT0, GL_SPECULAR, whiteLight);				// sets specular light to white
+		glLight(GL_LIGHT0, GL_DIFFUSE, whiteLight);					// sets diffuse light to white
+		glLightModel(GL_LIGHT_MODEL_AMBIENT, lModelAmbient);		// global ambient light 
+		
+		glEnable(GL_LIGHTING);										// enables lighting
+		glEnable(GL_LIGHT0);										// enables light0
+		
+		glEnable(GL_COLOR_MATERIAL);								// enables opengl to use glColor3f to define material color
+		glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 	}
 	
 	private void render() {
@@ -124,8 +167,8 @@ public class Renderer extends Thread {
 			lwjgle.printStackTrace();
 		}
 		initOGL();
-		resizeOGL();
-		initLightOGL();	
+		//resizeOGL();
+		//initLightOGL();	
 		if (this.getServerWorld() != null){
 			while (serverWorld.isActive()){
 				render();
