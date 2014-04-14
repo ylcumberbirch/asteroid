@@ -55,8 +55,7 @@ public class Asteroid extends GameObject{
 	public void renderAsteroid(int facets){
 		
 		Sphere s = new Sphere();            // an LWJGL class
-        s.setOrientation(GLU.GLU_OUTSIDE);  // normals point outwards
-        s.setTextureFlag(false);             // generate texture coords
+        //s.setOrientation(GLU.GLU_OUTSIDE);  // normals point outwards
         GL11.glPushMatrix();
         {
 	        //GL11.glRotatef(-90f, 1,0,0);    // rotate the sphere to align the axis vertically

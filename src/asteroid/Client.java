@@ -8,7 +8,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-
+import java.nio.channels.SocketChannel;
+import java.nio.ByteBuffer;
 import tools.Constants;
 
 /**
@@ -33,6 +34,10 @@ public class Client {
 		control.start();
 		try{
 			Socket socket = new Socket(Constants.SERVER_ADDRESS, Constants.SERVER_PORT);
+			SocketChannel sc = socket.getChannel();
+			//ByteBuffer bb = new ByteBuffer();
+			//bb.append(1);
+			//sc.write(bb);
 		    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
 		    oos.flush();
 			while(myWorld.isActive()) {
