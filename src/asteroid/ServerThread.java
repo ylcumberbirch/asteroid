@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Hashtable;
 
@@ -54,7 +55,6 @@ public class ServerThread implements Runnable{
 		try
 		{
 			//ByteArrayOutputStream baos = new ByteArrayOutputStream(size);
-	
 			ObjectInputStream ois = new ObjectInputStream(this.getConection().getInputStream());
 			while(this.getServerWorld().isActive())
 			{	

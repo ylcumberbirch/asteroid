@@ -34,14 +34,13 @@ public class Client {
 		control.start();
 		try{
 			Socket socket = new Socket(Constants.SERVER_ADDRESS, Constants.SERVER_PORT);
-			SocketChannel sc = socket.getChannel();
-			//ByteBuffer bb = new ByteBuffer();
-			//bb.append(1);
-			//sc.write(bb);
-		    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+			
+	
+			ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
 		    oos.flush();
 			while(myWorld.isActive()) {
 				//Create Message and send
+				
 				Message message= new Message(clientID, myWorld.getObjects());
 				oos.writeObject(message);
 				oos.flush();
@@ -53,8 +52,8 @@ public class Client {
 				}
 			}
 			//Window Closed. Close socket and oos
-			oos.writeObject(null);
-			oos.close();
+			//oos.writeObject(null);
+			//oos.close();
 			socket.close();
 			
 	    } catch (SocketException se) {
