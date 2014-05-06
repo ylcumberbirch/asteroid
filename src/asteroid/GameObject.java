@@ -11,7 +11,7 @@ public abstract class GameObject implements Drawable, Serializable{
 	private static final long serialVersionUID = 2016082203350718095L;
 	private Vector position;
 	private  transient Vector speed;
-	private int id;
+	private transient int id;
 	private int clientID;
 		
 	//Init

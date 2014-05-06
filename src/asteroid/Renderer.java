@@ -7,15 +7,21 @@ import static org.lwjgl.util.glu.GLU.gluLookAt;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
-//import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 
 import tools.Constants;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.FloatBuffer;
+
+import org.newdawn.slick.Color;
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+import org.newdawn.slick.util.ResourceLoader;
 
 public class Renderer extends Thread {
 	private Game world;			//Single Client World
@@ -24,6 +30,7 @@ public class Renderer extends Thread {
 	private FloatBuffer lightPosition;
 	private FloatBuffer whiteLight; 
 	private FloatBuffer lModelAmbient;
+	private Texture texture;
 	
 	public Renderer(Game world){
 		this.world = world;
@@ -55,8 +62,8 @@ public class Renderer extends Thread {
 	
 	public void stopRendering() {
 		//Methods already check if created before destroying.
-		Display.destroy();
-		Keyboard.destroy();
+		//Display.destroy();
+		//Keyboard.destroy();
 		System.exit(0);
 	}
 	
@@ -74,8 +81,19 @@ public class Renderer extends Thread {
 		lModelAmbient.put(0.5f).put(0.5f).put(0.5f).put(1.0f).flip();
 	}
 	
+	public void initTextureBG(){
+		try {
+			this.texture = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/bg.jpg"));
+			 
+		} catch (IOException ex) {
+			System.out.println("Problem Loadig Texture");
+		}
+	}
+	
 	public void initOGL(){
+		   
 		glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
+		//glClearColor(1f, 1f, 1f, 0f);
 		glClearDepth(1.0f);
 		glEnable(GL_DEPTH_TEST);
 		//glEnable(GL_LIGHTING);
@@ -92,7 +110,9 @@ public class Renderer extends Thread {
 		gluLookAt(  this.world.getCameraPosition().getX(), this.world.getCameraPosition().getY(), this.world.getCameraPosition().getZ(),   	// Camera Position
 					this.world.getCameraFoa().getX(), this.world.getCameraFoa().getY(), this.world.getCameraFoa().getZ(),   				// FOA
 					0, 1, 0 );
+		
 		initLightOGL();
+		initTextureBG();
 		
 	}
 	
@@ -119,11 +139,34 @@ public class Renderer extends Thread {
 	
 	private void render() {
 		while (!Display.isCloseRequested()  && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)){
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_UP))
+			{
+				this.world.getCameraFoa().setY(this.world.getCameraFoa().getY() + 0.5f);
+			}
+			else if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+			{
+				this.world.getCameraFoa().setY(this.world.getCameraFoa().getY() - 0.5f);
+			}
+			else if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+			{
+				this.world.getCameraFoa().setX(this.world.getCameraFoa().getX() + 0.5f);
+			}
+			else if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+			{
+				this.world.getCameraFoa().setX(this.world.getCameraFoa().getX() - 0.5f);
+			}
+			
 			if (Display.isVisible()) {
+				
 				draw();
+				glLoadIdentity();
+				gluLookAt( this.world.getCameraPosition().getX(), this.world.getCameraPosition().getY(), this.world.getCameraPosition().getZ(),   	// Camera Position
+						this.world.getCameraFoa().getX(), this.world.getCameraFoa().getY(), this.world.getCameraFoa().getZ(),   				// FOA
+						0, 1, 0 );
 			}
 			Display.update();
-			Display.sync(60);
+			Display.sync(100);
 		}
 		world.setActive(false);
 		if (this.getServerWorld() != null)
@@ -161,34 +204,41 @@ public class Renderer extends Thread {
 		}
 		stopRendering();
 	}
+	
+	public void drawBG(){
+		Color.white.bind();
+		glEnable(GL_TEXTURE_2D);
+		texture.bind();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 1.0f); 
+			glVertex3f(-Constants.LIM_X, -Constants.LIM_Y, 0f);	// Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f);
+			glVertex3f( Constants.LIM_X, -Constants.LIM_Y, 0f);	// Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f);
+			glVertex3f( Constants.LIM_X, Constants.LIM_Y, 0f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f);
+			glVertex3f(-Constants.LIM_X, Constants.LIM_Y, 0f);	// Top Left Of The Texture and Quad
+		glEnd();
+		glDisable(GL11.GL_TEXTURE_2D);
+	}
+	
 	public void drawLines(){
-		glLineWidth(2);
-		glBegin(GL_LINES);
-			glColor3f(0, 0, 0);
-			//Top Line
+		//Texture BG
+		drawBG();
+		//Dark grey on right side of screen
+        glColor3f(0.2f, 0.2f, 0.2f);
+        glBegin(GL11.GL_QUADS);
         	glVertex3d(Constants.LIM_X, Constants.LIM_Y,0f);
-            glVertex3d(-Constants.LIM_X, Constants.LIM_Y, 0f);
-            //Bottom Line
-            glVertex3d(Constants.LIM_X, -Constants.LIM_Y,0f);
-            glVertex3d(-Constants.LIM_X, -Constants.LIM_Y, 0f);
-            //Right Line
-            glVertex3d(Constants.LIM_X, -Constants.LIM_Y,0f);
-            glVertex3d(Constants.LIM_X, Constants.LIM_Y, 0f);
-            //Left Line
-            glVertex3d(-Constants.LIM_X,-Constants.LIM_Y,0f);
-            glVertex3d(-Constants.LIM_X, Constants.LIM_Y, 0f);
-            //Diag Top Right
-        	glVertex3d(Constants.LIM_X, Constants.LIM_Y,0f);
-            glVertex3d(Constants.LIM_X, Constants.LIM_Y, 100f);
-            //Diag Top Left
-            glVertex3d(-Constants.LIM_X, Constants.LIM_Y,0f);
-            glVertex3d(-Constants.LIM_X, Constants.LIM_Y, 100f);
-            //Diag Bottom Right
-            glVertex3d(Constants.LIM_X, -Constants.LIM_Y,0f);
-            glVertex3d(Constants.LIM_X, -Constants.LIM_Y, 100f);
-            //Diag Bottom Left
-            glVertex3d(-Constants.LIM_X, -Constants.LIM_Y,0f);
-            glVertex3d(-Constants.LIM_X, -Constants.LIM_Y, 100f);
+        	glVertex3d(Constants.LIM_X, Constants.LIM_Y, 100f);
+        	glVertex3d(Constants.LIM_X, -Constants.LIM_Y,100f);
+        	glVertex3d(Constants.LIM_X, -Constants.LIM_Y, 0f);
+        glEnd();
+      //Dark grey on left side of screen
+        glBegin(GL11.GL_QUADS);
+        	glVertex3d(-Constants.LIM_X, -Constants.LIM_Y,0f);
+        	glVertex3d(-Constants.LIM_X, -Constants.LIM_Y, 100f);
+        	glVertex3d(-Constants.LIM_X, Constants.LIM_Y,100f);
+        	glVertex3d(-Constants.LIM_X, Constants.LIM_Y, 0f);
         glEnd();
 	}
 }

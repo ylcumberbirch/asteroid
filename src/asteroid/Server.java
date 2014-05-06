@@ -1,6 +1,7 @@
 package asteroid;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Hashtable;
@@ -44,8 +45,9 @@ public class Server extends Thread{
 		{
 			ServerControl sc = new ServerControl(this.getServerWorld(), this.getClients());
 			sc.start();
-			pool = Executors.newFixedThreadPool(5);
-			ServerSocket server = new ServerSocket(Constants.SERVER_PORT);
+			pool = Executors.newFixedThreadPool(10);
+			InetAddress addr = InetAddress.getByName(Constants.SERVER_ADDRESS);
+			ServerSocket server = new ServerSocket(Constants.SERVER_PORT, 5, addr);
 			System.out.println("Server listening at " + server.getInetAddress().toString() + ":" + server.getLocalPort());
 			
 			while (this.getServerWorld().isActive())

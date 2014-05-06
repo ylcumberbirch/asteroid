@@ -28,7 +28,7 @@ public class Control extends Thread{
 			this.setTime(System.nanoTime());
 			this.getWorld().update(this.getTime());			
 			try{
-				Thread.sleep(1);
+				Thread.sleep(3);
 			}catch (InterruptedException ex) {
 			}
 		}
