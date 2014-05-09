@@ -86,7 +86,7 @@ public class Game implements Serializable{
 	}
 	
 	public synchronized void draw(){
-		glLoadIdentity();
+		//glLoadIdentity();
 		for (int i = 0; i < this.objects.size(); i++)
 		{
 			objects.get(i).draw();

@@ -53,10 +53,10 @@ public class Asteroid extends GameObject{
 	}
 	
 	public void renderAsteroid(int facets){
-		
-		Sphere s = new Sphere();            // an LWJGL class
+			
         //s.setOrientation(GLU.GLU_OUTSIDE);  // normals point outwards
         GL11.glPushMatrix();
+        Sphere s = new Sphere();            // an LWJGL class
         {
 	        //GL11.glRotatef(-90f, 1,0,0);    // rotate the sphere to align the axis vertically
         	GL11.glColor3f(this.getR(), this.getG(), this.getB());
