@@ -30,7 +30,11 @@ public class Renderer extends Thread {
 	private FloatBuffer lightPosition;
 	private FloatBuffer whiteLight; 
 	private FloatBuffer lModelAmbient;
-	private Texture texture;
+	private Texture texture1;
+	private Texture texture2;
+	private Texture texture3;
+	private Texture texture4;
+	private Texture texture5;
 	
 	public Renderer(Game world){
 		this.world = world;
@@ -83,7 +87,11 @@ public class Renderer extends Thread {
 	
 	public void initTextureBG(){
 		try {
-			this.texture = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/bg.jpg"));
+			this.texture1 = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/nightsky_north.jpg"));
+			this.texture2 = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/nightsky_up.jpg"));
+			this.texture3 = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/nightsky_down.jpg"));
+			this.texture4 = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/nightsky_east.jpg"));
+			this.texture5 = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/nightsky_west.jpg"));
 			 
 		} catch (IOException ex) {
 			System.out.println("Problem Loadig Texture");
@@ -154,8 +162,8 @@ public class Renderer extends Thread {
 			moveY = moveY + 0.5f;
 		}
 		if (moveX != 0 || moveY != 0){
-			GL11.glRotatef(moveX, 1,0,0);
 			GL11.glRotatef(moveY, 0,1,0);
+			GL11.glRotatef(moveX, 1,0,0);
 		}
 	}
 	
@@ -216,7 +224,7 @@ public class Renderer extends Thread {
 	public void drawBG(){
 		Color.white.bind();
 		glEnable(GL_TEXTURE_2D);
-		texture.bind();
+		texture1.bind();
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f, 1.0f); 
 			glVertex3f(-Constants.LIM_X-1f, -Constants.LIM_Y-1f, 0f);	// Bottom Left Of The Texture and Quad
@@ -233,35 +241,68 @@ public class Renderer extends Thread {
 	public void drawLines(){
 		//Texture BG
 		drawBG();
-		//Dark grey on right side of screen
-        glColor3f(0.4f, 0.4f, 0.4f);
+		//right side of screen
+		Color.white.bind();
+		glEnable(GL_TEXTURE_2D);
+			texture4.bind();
+	        glColor3f(0.4f, 0.4f, 0.4f);
+	        glBegin(GL11.GL_QUADS);
+	        	glTexCoord2f(0.0f, 0.0f);
+	        	glVertex3d(Constants.LIM_X+1, Constants.LIM_Y+1,0f);
+	        	glTexCoord2f(1.0f, 0.0f);
+	        	glVertex3d(Constants.LIM_X+1, Constants.LIM_Y+1, 100f);
+	        	glTexCoord2f(1.0f, 1.0f);
+	        	glVertex3d(Constants.LIM_X+1, -Constants.LIM_Y-1,100f);
+	        	glTexCoord2f(0.0f, 1.0f);
+	        	glVertex3d(Constants.LIM_X+1, -Constants.LIM_Y-1, 0f);
+	        glEnd();
+        glDisable(GL11.GL_TEXTURE_2D);
+      //left side of screen
+        Color.white.bind();
+		glEnable(GL_TEXTURE_2D);
+			texture5.bind();
         glBegin(GL11.GL_QUADS);
-        	glVertex3d(Constants.LIM_X+1, Constants.LIM_Y+1,0f);
-        	glVertex3d(Constants.LIM_X+1, Constants.LIM_Y+1, 100f);
-        	glVertex3d(Constants.LIM_X+1, -Constants.LIM_Y-1,100f);
-        	glVertex3d(Constants.LIM_X+1, -Constants.LIM_Y-1, 0f);
-        glEnd();
-      //Dark grey on left side of screen
-        glBegin(GL11.GL_QUADS);
+        	
+        	glTexCoord2f(1.0f, 1.0f);
         	glVertex3d(-Constants.LIM_X-1, -Constants.LIM_Y-1,0f);
+        	glTexCoord2f(0.0f, 1.0f);
         	glVertex3d(-Constants.LIM_X-1, -Constants.LIM_Y-1, 100f);
+        	glTexCoord2f(0.0f, 0.0f);
         	glVertex3d(-Constants.LIM_X-1, Constants.LIM_Y+1,100f);
+        	glTexCoord2f(1.0f, 0.0f);
         	glVertex3d(-Constants.LIM_X-1, Constants.LIM_Y+1, 0f);
         glEnd();
-      //Light grey on top side of screen
-        glColor3f(0.8f, 0.8f, 0.8f);
-        glBegin(GL11.GL_QUADS);
-        	glVertex3d(Constants.LIM_X+1, Constants.LIM_Y+1,0f);
-        	glVertex3d(Constants.LIM_X+1, Constants.LIM_Y+1, 100f);
-        	glVertex3d(-Constants.LIM_X-1, Constants.LIM_Y+1,100f);
-        	glVertex3d(-Constants.LIM_X-1, Constants.LIM_Y+1, 0f);
-        glEnd();
-      //Light grey on bottom side of screen
-        glBegin(GL11.GL_QUADS);
-        	glVertex3d(-Constants.LIM_X-1, -Constants.LIM_Y-1,0f);
-        	glVertex3d(-Constants.LIM_X-1, -Constants.LIM_Y-1, 100f);
-        	glVertex3d(Constants.LIM_X+1, -Constants.LIM_Y-1,100f);
-        	glVertex3d(Constants.LIM_X+1, -Constants.LIM_Y-1, 0f);
-        glEnd();
+        glDisable(GL11.GL_TEXTURE_2D);
+      //top side of screen
+        Color.white.bind();
+		glEnable(GL_TEXTURE_2D);
+			texture2.bind();
+			glBegin(GL11.GL_QUADS);
+	        	glTexCoord2f(0.0f, 0.0f);
+	        	glVertex3d(Constants.LIM_X+1, Constants.LIM_Y+1,0f);
+	        	glTexCoord2f(1.0f, 0.0f);
+	        	glVertex3d(Constants.LIM_X+1, Constants.LIM_Y+1, 100f);
+	        	glTexCoord2f(1.0f, 1.0f);
+	        	glVertex3d(-Constants.LIM_X-1, Constants.LIM_Y+1,100f);
+	        	glTexCoord2f(0.0f, 1.0f);
+	        	glVertex3d(-Constants.LIM_X-1, Constants.LIM_Y+1, 0f);
+        	glEnd();
+        glDisable(GL11.GL_TEXTURE_2D);
+      //bottom side of screen
+        Color.white.bind();
+		glEnable(GL_TEXTURE_2D);
+			texture3.bind();
+	        glBegin(GL11.GL_QUADS);
+	        glTexCoord2f(0.0f, 0.0f);
+	        	glVertex3d(-Constants.LIM_X-1, -Constants.LIM_Y-1,0f);
+	        	glTexCoord2f(1.0f, 0.0f);
+	        	glVertex3d(-Constants.LIM_X-1, -Constants.LIM_Y-1, 100f);
+	        	glTexCoord2f(1.0f, 1.0f);
+	        	glVertex3d(Constants.LIM_X+1, -Constants.LIM_Y-1,100f);
+	        	glTexCoord2f(0.0f, 1.0f);
+	        	glVertex3d(Constants.LIM_X+1, -Constants.LIM_Y-1, 0f);
+	        glEnd();
+	    glDisable(GL11.GL_TEXTURE_2D);
+        Color.white.bind();
 	}
 }

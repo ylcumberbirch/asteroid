@@ -16,6 +16,6 @@ public class Constants implements Serializable{
 	public static final float LIM_Z = 50f;
 	public static final int CLIENT_ASTEROIDS = 10;
 	public static final float DEFAULT_SIZE = 1.5f; 
-	public static final float MAX_SPEED = 0.2f;
+	public static final float MAX_SPEED = 0.1f;
 	public static final int NUM_FACETS = 17;
 }
